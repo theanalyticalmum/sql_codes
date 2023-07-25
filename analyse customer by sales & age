@@ -1,0 +1,22 @@
+/* Analyse customer by customer age; customer age by sales
+tables - dbo.dimcustomer, dbo.factinternetsales using the Adventureworks DB 2017 */
+
+ select sum(b.[SalesAmount]) TotalSale ,
+case when datediff(Year,a.BirthDate, getdate()) > 0 and datediff(Year,a.BirthDate, getdate()) <= 30 then '0-30 Years' 
+	 when datediff(Year,a.BirthDate, getdate()) > 30 and datediff(Year,a.BirthDate, getdate()) <= 40 then '31-40 Years' 
+	 when datediff(Year,a.BirthDate, getdate()) > 40 and datediff(Year,a.BirthDate, getdate()) <=50 then '41-50 Years'
+	 when datediff(Year,a.BirthDate, getdate()) > 50 and datediff(Year,a.BirthDate, getdate()) <=60 then '51-60 Years'
+	 when datediff(Year,a.BirthDate, getdate()) > 60 and datediff(Year,a.BirthDate, getdate()) <=70 then '61-70 Years'
+	 when datediff(Year,a.BirthDate, getdate()) > 70 and datediff(Year,a.BirthDate, getdate()) <=80 then '71-80 Years'
+	 else 'More than 80 Years'
+end as CustomerAge
+into #test from [dbo].[DimCustomer] a
+inner join [dbo].[FactInternetSales] b
+on a.CustomerKey = b.CustomerKey
+group by datediff(Year,a.BirthDate, getdate())
+
+select sum(TotalSale) as Totalsale , CustomerAge
+from #test
+group by CustomerAge
+
+
