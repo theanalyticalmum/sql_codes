@@ -1,4 +1,10 @@
 -- these codes are based on the Adventureworks Database 2017
+/* Problem: How can we predict the potential future value of our customers?
+Questions: What is the average monetary value of purchases made by each customer? How often do
+customers make repeat purchases? Can we estimate the potential revenue a customer may generate
+over their lifetime with the company? */
+
+
 /* what's the repeat purchase count per customer?*/
 select distinct CustomerID, count(SalesOrderID) as repeatpurchasecount from Sales.SalesOrderHeader
 group by CustomerID
