@@ -1,0 +1,8 @@
+ --Calculate sales by occupation by year using the tables dbo.prospectivebuyer and factinternet
+
+ select sum(b.[SalesAmount]) SaleAmount,datepart(Year,b.Orderdate) as OrderYear , 
+a.[EnglishOccupation]
+from [dbo].[FactInternetSales] b
+inner join [dbo].[DimCustomer] a
+on a.CustomerKey = b.CustomerKey
+group by a.[EnglishOccupation] , datepart(Year,b.Orderdate)
