@@ -1,0 +1,23 @@
+-- these codes are based on the Adventureworks Database 2017
+/* what's the repeat purchase count per customer?*/
+select distinct CustomerID, count(SalesOrderID) as repeatpurchasecount from Sales.SalesOrderHeader
+group by CustomerID
+order by repeatpurchasecount
+
+/* calculate the number of days between orders per customer*/
+select distinct salesorderid, CustomerID, OrderDate, DATEDIFF(day,lag(OrderDate) OVER (Partition by customerid order by orderdate), OrderDate) as days_between_orders
+ from Sales.SalesOrderHeader
+ group by CustomerID, OrderDate, SalesOrderID
+ order by CustomerID, OrderDate
+
+/* calculate customer life time value*/
+select a.CustomerID, sum(b.SubTotal) as CustomerRevenue, DATEDIFF(DAY, MIN(b.OrderDate), MAX(b.OrderDate)) as CustomerLifeSpan into #clv /*sum(b.SubTotal)/DATEDIFF(Day,MIN(b.OrderDate), MAX(b.OrderDate)) AS CLV */from sales.Customer a
+join Sales.SalesOrderHeader b
+on a.CustomerID = b.CustomerID
+GROUP BY a.CustomerID
+
+select * from #clv
+select CustomerID, CustomerRevenue, CustomerRevenue/CustomerLifeSpan AS CLV from #clv
+where CustomerLifeSpan != 0
+group by CustomerID, CustomerRevenue, CustomerLifeSpan
+order by CLV DESC
