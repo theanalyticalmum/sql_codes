@@ -1,0 +1,4 @@
+-- calculate the number of orders and total sales ($) per year (based on Adventureworks DB 2017
+select distinct year(orderdate) as order_year, count(*) as orders, sum(SubTotal) as total_sales from sales.SalesOrderHeader 
+group by year(orderdate)
+order by year(orderdate)
