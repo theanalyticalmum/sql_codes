@@ -1,0 +1,43 @@
+--Which products are popular among high-value customers?
+-- assuming high value customers are those with orders >= $10,000, what products are they buying?
+select distinct a.SalesOrderID, a.subtotal, (a.CustomerID), (b.OrderQty), c.ProductID, c.Name from sales.SalesOrderHeader a 
+join sales.SalesOrderDetail b 
+on a.SalesOrderID = b.SalesOrderID
+join Production.Product c
+on c.ProductID = b.ProductID
+group by a.SalesOrderID, a.CustomerID, a.SubTotal, b.OrderQty, c.ProductID, c.Name
+having SubTotal >= 10000
+order by CustomerID
+
+-- -- now which products are popular among these high value customers?
+select distinct a.SalesOrderID, a.subtotal, (a.CustomerID), (b.OrderQty), c.ProductID, c.Name into #highvalue from sales.SalesOrderHeader a 
+join sales.SalesOrderDetail b 
+on a.SalesOrderID = b.SalesOrderID
+join Production.Product c
+on c.ProductID = b.ProductID
+group by a.SalesOrderID, a.CustomerID, a.SubTotal, b.OrderQty, c.ProductID, c.Name
+
+having SubTotal >= 10000
+order by CustomerID
+
+select distinct ProductID,Name, Count(*) as popularproducts from #highvalue
+group by ProductID, Name
+order by popularproducts desc
+
+-- how many products are offered by the company
+select count(distinct ProductID) as totalproducts, ProductID from Production.product
+group by ProductID
+-- OR this way
+select count(*) from Production.Product
+-- how many products got at least a sale?
+select distinct(ProductID) from sales.SalesOrderDetail
+where orderqty > 0
+--OR
+select distinct(a.ProductID), b.Name from sales.SalesOrderDetail a 
+join Production.Product b 
+on a.ProductID = b.ProductID
+where orderqty > 0
+-- OR
+select count(distinct productid) from sales.SalesOrderDetail
+where orderqty>0
+
